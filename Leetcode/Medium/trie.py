@@ -58,10 +58,38 @@ class Trie:
         else:
             return self.links[idx].startsWith(rem)
 
+    def wildCardMatchingRestricted(self, wildcard):
+        """
+        Returns if there is any word in the trie that starts with the given wildcard only . is supported
+        :type prefix: str
+        :rtype: bool
+        """
+        if not wildcard:
+            if self.terminal:
+                return True
+            else:
+                return False
+        char1 = wildcard[0]
+        rem = wildcard[1:]
+        if char1=='.':
+            for lnk in self.links:
+                if lnk:
+                    searchSuccess = lnk.wildCardMatchingRestricted(rem)
+                    if searchSuccess:
+                        return True
+            return False
+        else:
+            idx = ord(char1)-ord('a')
+            if not self.links[idx]:
+                return False
+            else:
+                return self.links[idx].wildCardMatchingRestricted(rem)
+        
+        
 
 root = Trie()
 root.insert('setang')
 root.insert('pussy')
 root.insert('set')
 
-print(root.startsWith('psss'))    
+print(root.wildCardMatchingRestricted('p..sy'))    
