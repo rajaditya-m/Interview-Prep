@@ -17,80 +17,24 @@ class Solution:
         """
         cntr = 0
         root = BinaryTree(cntr)
+        list_bv = []
+
+        maxXor = -1
         #create the false trie 
         for idx, num in enumerate(nums):
             binary_str = self.create32BitPaddedBinary(num)
-            # print(binary_str)
+            list_bv.append(binary_str)
             cntr = self.insertToTree(root, binary_str, idx, cntr)
-        #print('0: {}'.format(root))
-        #print('1: {} 2:{}'.format(root.left, root.right))
-        #print('3: {} 4:{} 5:{} 6:{}'.format(root.left.left, root.left.right, root.right.left, root.right.right))
-        # #climbing down together 
-        left = right = root
-        leftVec = []
-        rightVec = []
-        hght = 0
-        while left and right:
-            if left == right:
-                #print('Before {} {}'.format(left,right))
-                if left.left and not left.right:
-                    left = right = left.left
-                    leftVec.append('0')
-                    rightVec.append('0')
-                elif left.right and not left.left:
-                    left = right = left.right
-                    leftVec.append('1')
-                    rightVec.append('1')
-                elif left.right and left.left:
-                    # print('Before {} {}'.format(left,right))
-                    left = left.left
-                    right = right.right
-                    leftVec.append('0')
-                    rightVec.append('1')
-                    # print('After {} {}'.format(left,right))
-                    # print(hght)
-                else:
-                    left = right = None
-                    # print('hhhh'+str(hght))
-                    # print(hght)
-                #print(hght)
-                #print('After {} {}'.format(left,right))
-            else:
-                # if hght==1:
-                #     print(left.left, left.right)
-                #     print(right.left, right.right)
-                if left.left and right.right:
-                    left = left.left
-                    leftVec.append('0')
-                    right = right.right
-                    rightVec.append('1')
-                    #print(hght)
-                elif left.right and right.left:
-                    left = left.right
-                    leftVec.append('1')
-                    right = right.left
-                    rightVec.append('0')
-                    # print(hght)
-                elif left.left and right.left:
-                    left = left.left
-                    leftVec.append('0')
-                    right = right.left
-                    rightVec.append('0')
-                elif left.right and right.right:
-                    left = left.right
-                    leftVec.append('1')
-                    right = right.right
-                    rightVec.append('1')
-                else:
-                    left = right = None
-                    # print('gggg'+str(hght))
-            hght += 1
-        # print('left[{}]:{}'.format(len(leftVec),leftVec))
-        # print('rght[{}]:{}'.format(len(rightVec),rightVec))
-        lv = self.convertBinVecToInt(leftVec)
-        rv = self.convertBinVecToInt(rightVec)
-        return lv^rv
 
+        for binary_vecs in list_bv:
+            new_binary_vec = self.searchTrieWithNumber(root, binary_vecs)
+            curNum = self.convertBinVecToInt(binary_vecs)
+            xorNum = self.convertBinVecToInt(new_binary_vec)
+            xorVal = curNum^xorNum
+            maxXor = max(xorVal, maxXor)
+            # print('{}^{}={}'.format(curNum, xorNum, curNum^xorNum))
+        
+        return maxXor
 
     def convertBinVecToInt(self, binary_vec):
         mult = 1
@@ -100,6 +44,30 @@ class Solution:
                 num += mult
             mult *= 2
         return num
+
+    def searchTrieWithNumber(self, root, num_vec):
+        new_bit_vec = []
+        curNumTreePtr = root
+        curMaxTreePtr = root
+        for bit in num_vec:
+            if bit == '0':
+                if curMaxTreePtr.right:
+                    new_bit_vec.append('1')
+                    curMaxTreePtr = curMaxTreePtr.right
+                else:
+                    new_bit_vec.append('0')
+                    curMaxTreePtr = curMaxTreePtr.left
+                curNumTreePtr = curNumTreePtr.left
+            if bit == '1':
+                if curMaxTreePtr.left:
+                    new_bit_vec.append('0')
+                    curMaxTreePtr = curMaxTreePtr.left
+                else:
+                    new_bit_vec.append('1')
+                    curMaxTreePtr = curMaxTreePtr.right
+                curNumTreePtr = curNumTreePtr.right
+        return new_bit_vec
+            
 
     def insertToTree(self, root, binary_str, idx, cntrr):
         if not binary_str:
@@ -144,3 +112,4 @@ class Solution:
 input = [32,18,33,42,29,20,26,36,15,46]
 obj = Solution()
 print(obj.findMaximumXOR(input))
+# obj.findMaximumXOR(input)
