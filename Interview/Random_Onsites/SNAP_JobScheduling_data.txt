@@ -1,0 +1,10 @@
+f1 true 0
+f2 true 2
+f1 true 5
+f1 false 7
+f2 false 10
+f3 true 11
+f3 false 12
+f1 false 15
+f4 true 16
+f4 false 19
